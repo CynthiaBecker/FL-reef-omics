@@ -45,32 +45,7 @@ metadata <- read.table("data/FLK2019_environmental_data_for_R.txt", sep = "\t", 
 
 # path to the shapefiles. Download the shapefiles linked above and change the path to use this code
 usa <- st_read("~/Documents/Apprill_lab/USVI_Projects/TideExpt/USVItideGitHub/Shapefile_for_Map/", "vt021tk4894") 
-```
-
-```
-## Reading layer `vt021tk4894' from data source 
-##   `/Users/cynthiabecker/Documents/Apprill_lab/USVI_Projects/TideExpt/USVItideGitHub/Shapefile_for_Map' 
-##   using driver `ESRI Shapefile'
-## Simple feature collection with 56 features and 4 fields
-## Geometry type: MULTIPOLYGON
-## Dimension:     XY
-## Bounding box:  xmin: -179.1686 ymin: -14.59976 xmax: 179.7487 ymax: 71.38961
-## Geodetic CRS:  WGS 84
-```
-
-```r
 fcr <- st_read("~/Google Drive (cbecker@whoi.edu) (not syncing)/Alucia 2019/Site Maps/Coral_and_Hard_Bottom_Habitats_in_Florida/")
-```
-
-```
-## Reading layer `Coral_and_Hard_Bottom_Habitats_in_Florida' from data source 
-##   `/Users/cynthiabecker/Google Drive (cbecker@whoi.edu) (not syncing)/Alucia 2019/Site Maps/Coral_and_Hard_Bottom_Habitats_in_Florida' 
-##   using driver `ESRI Shapefile'
-## Simple feature collection with 15138 features and 6 fields
-## Geometry type: POLYGON
-## Dimension:     XY
-## Bounding box:  xmin: -96.7856 ymin: 24.32566 xmax: -79.98332 ymax: 30.63009
-## Geodetic CRS:  WGS 84
 ```
 
 
