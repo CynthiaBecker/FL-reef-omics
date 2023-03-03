@@ -549,12 +549,6 @@ ggplot(samplepoints, aes(x = CAP1, y = CAP2)) +
 <img src="figures/fig-Untargeted metabolome positive dbRDA-1.png" width="672" />
 
 
-# Figure 2
-
-**Zones in Florida’s Coral Reef (FCR) have significantly different disease prevalence, microbial  abundances and organic carbon and silicate concentrations.**
-
-**Figure 2.** a) Map of all 85 reefs sampled for environmental variables are colored by zone and placed above FCR (tan). Environmental variables that changed significantly by zone include b) stony coral tissue loss disease prevalence (percent of live coral), (c) ratio of heterotrophic to photosynthetic microbial cells, (d) total organic carbon concentration, (e) heterotrophic microbial abundances (unpigmented bacteria and archaea), (f) Prochlorococcus abundances, (g) Synechococcus abundances, (h) picoeukaryote abundances, and (i) silicate concentration was significantly different between FCR zones as a result of a Kruskal-Wallis test and less than the Bonferroni-corrected p-value of 0.00192. Asterisks denote the zone was significantly different than all other zones tested in the pairwise Wilcoxon rank sum test (Benjamini-Hochberg adjusted p<0.05). 
-
 
 
 # Figure 3
