@@ -75,6 +75,27 @@ metadata_MG <- read.table("data/Fxn_metadata-filt.txt", sep = "\t", header = TRU
 class(metadata_MG$Sample) <- "character"
 ```
 
+Targeted metabolome data
+Import the data that has been corrected for extraction efficience and converted to picomolar
+
+```r
+metadata_Target_Mtb = read.table('data/Targeted_metadata.txt', header=T, sep='\t')
+conc_Target_Mtb = read.table('data/Targeted_corrected_env_conc_pM.txt', header=T, sep='\t')
+```
+
+Untargeted metabolome data - positive and negative ion modes
+Import the data that has been filered and normalized
+
+```r
+metab_untarg_neg <- read.table("data/Untargeted_filtered_Normalized_negative_mode.txt", sep = "\t", header = TRUE, row.names = 1)
+metab_untarg_pos <- read.table("data/Untargeted_filtered_Normalized_positive_mode.txt", sep = "\t", header = TRUE, row.names = 1)
+metadata_untarg_mtb <- read.table("data/Untargeted_metadata.txt", sep = "\t", header = TRUE, row.names = 1)
+
+#reorder metadata
+metadata_untarg_mtb <- metadata_untarg_mtb[match(row.names(metab_untarg_neg), row.names(metadata_untarg_mtb)),]
+```
+
+
 ### Generate functions used in analysis
 
 ```r
@@ -325,13 +346,253 @@ ggplot(samplepoints, aes(x = CAP1*(-1), y = CAP2*(-1))) +
 
 ### Figure 1d. Targeted metabolome
 
+```r
+#order the metadata and mydata to the same
+rownames(conc_Target_Mtb) <- conc_Target_Mtb[,1]
+idx <- match(metadata_Target_Mtb$Observations, conc_Target_Mtb$X)
+conc_Target_Mtb2 <- as.matrix(conc_Target_Mtb[idx, 2:40])
+
+#include only metadata variables you want for the dbRDA analysis
+metaRDA <- metadata_Target_Mtb %>%
+  select(Date, dayoftrip, zone, hbact, syn, pro, peuk, npoc, SCTLDprevalence, Hard_coral, Fleshy_Macroalgae, Soft_coral, Turf_Algae, Sponge) %>%
+  mutate(MA_turf = Fleshy_Macroalgae + Turf_Algae)
+
+#Choose which distance metric to use since the targeted data is different than the microbial community and untargeted data I usually use
+dayoftrip <- metadata_Target_Mtb$dayoftrip
+rankindex(dayoftrip, conc_Target_Mtb2, indices = c("euc", "man", "gow","bra", "kul"), stepacross= FALSE, method = "spearman") #looks like gower is highest. I'll use this one.
+```
+
+```
+##         euc         man         gow         bra         kul 
+## -0.03194381 -0.01583491  0.22038432  0.05981922  0.08572067
+```
+
+```r
+set.seed(100) #set seed so next code is reproducible
+
+dbRDAgow = capscale(conc_Target_Mtb2 ~ zone + SCTLDprevalence + npoc + hbact + pro + syn + peuk + Hard_coral + MA_turf + Soft_coral + Sponge, metaRDA, distance = "gower", na.action = na.exclude) #12 explanatory environmental variables
+
+anovagow <- anova(dbRDAgow, by="terms", permu=999) #test for sig. environ. variables
+anovagow #check results
+```
+
+```
+## Permutation test for capscale under reduced model
+## Terms added sequentially (first to last)
+## Permutation: free
+## Number of permutations: 999
+## 
+## Model: capscale(formula = conc_Target_Mtb2 ~ zone + SCTLDprevalence + npoc + hbact + pro + syn + peuk + Hard_coral + MA_turf + Soft_coral + Sponge, data = metaRDA, distance = "gower", na.action = na.exclude)
+##                 Df SumOfSqs      F Pr(>F)    
+## zone             1  0.13355 6.0912  0.001 ***
+## SCTLDprevalence  1  0.07583 3.4589  0.002 ** 
+## npoc             1  0.06229 2.8412  0.001 ***
+## hbact            1  0.06939 3.1648  0.001 ***
+## pro              1  0.06658 3.0370  0.002 ** 
+## syn              1  0.04283 1.9534  0.033 *  
+## peuk             1  0.04940 2.2532  0.012 *  
+## Hard_coral       1  0.04196 1.9140  0.034 *  
+## MA_turf          1  0.04646 2.1190  0.023 *  
+## Soft_coral       1  0.05875 2.6798  0.003 ** 
+## Sponge           1  0.04262 1.9441  0.026 *  
+## Residual        26  0.57004                  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+#GOWER distance is the best
+#At pval of <0.05, all are significant except Turf_Algae and Fleshy_Macroalgae
+#Extract information to plot with ggplot the significant variables and sites and percent explained
+# barplot(dbRDAgow$CCA$eig) # investigate how many dimensions are important for explaining the data
+RDA1 <- (dbRDAgow$CCA$eig[1]/sum(dbRDAgow$CCA$eig))*100
+RDA2 <- (dbRDAgow$CCA$eig[2]/sum(dbRDAgow$CCA$eig))*100
+
+arrowtips <- data.frame(dbRDAgow$CCA$biplot[,1:2], pval = anovagow$`Pr(>F)`[1:11], variable = rownames(dbRDAgow$CCA$biplot)) #extract arrow tip values and add pval result from anova test to make it easy to remove non-significant arrows
+samplepoints <- data.frame(scores(dbRDAgow)$sites, metadata_Target_Mtb) #extract sample point information and add in the metadata associated with it
+
+### PLOTTING sample points and arrows that show significant variables (p < 0.05)
+ggplot(samplepoints, aes(x = CAP1, y = CAP2)) +
+  geom_point(data = samplepoints, aes(fill = zonenumber), size = 5, stroke = 0.5, pch = 21, alpha = 0.8) +
+  geom_segment(data = arrowtips[arrowtips$pval < 0.05, ], 
+               aes(x = 0, xend = CAP1, y = 0, yend = CAP2*(-1)), 
+               arrow = arrow(length = unit(0.25, "cm")), colour = "darkgray") +
+  coord_fixed() +
+  geom_text(data = arrowtips[arrowtips$pval < 0.05, ], aes(x = CAP1-0.03, y = CAP2*(-1), label = variable), size = 4) + 
+  labs(x = paste0("dbRDA1 [", RDA1, "%]"), y = paste0("dbRDA2 [",RDA2, "%]"), title = "Targeted dbRDA - Gower dist") +
+  scale_fill_manual(values = c("#DC050C", "#FF7F00", "#FDBF6F", "#4EB265", "#1F78B4", "#A6CEE3", "#882E72", "#DE77AE")) +
+    theme(plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank())
+```
+
+<img src="figures/fig-Targeted metabolome dbRDA-1.png" width="672" />
 
 ### Figure 1e. Untargeted metabolome - negative ion mode
 
+```r
+#Remove columns with an NA because that messes with the analysis
+table(colSums(is.na(metab_untarg_neg)) == 0) #see how many columns have NA - looks like 447
+```
+
+```
+## 
+## FALSE  TRUE 
+##   286  1142
+```
+
+```r
+metabs_neg2 <- metab_untarg_neg[ , colSums(is.na(metab_untarg_neg)) == 0]
+
+#include only metadata variables you want for the dbRDA analysis
+metaRDA <- metadata_untarg_mtb %>%
+  select(Date, dayoftrip, zone, hbact, syn, pro, peuk, npoc, SCTLD, Hard_coral, Fleshy_Macroalgae, Soft_coral, Turf_Algae, Sponge) %>%
+  mutate(MA_turf = Fleshy_Macroalgae + Turf_Algae)
+
+set.seed(100) #set seed so next code is reproducible
+dbRDA = capscale(metabs_neg2 ~ zone + SCTLD + npoc + hbact + pro + syn + peuk + Hard_coral + MA_turf + Soft_coral + Sponge, metaRDA, distance = "bray", na.action = na.exclude) #12 explanatory environmental variables
+plot(dbRDA) #this gives the overal results, which are good to visualize
+```
+
+<img src="figures/fig-Untargeted metabolome negative dbRDA-1.png" width="672" />
+
+```r
+anova <- anova(dbRDA, by="terms", permu=999) #test for sig. environ. variables
+anova #check results
+```
+
+```
+## Permutation test for capscale under reduced model
+## Terms added sequentially (first to last)
+## Permutation: free
+## Number of permutations: 999
+## 
+## Model: capscale(formula = metabs_neg2 ~ zone + SCTLD + npoc + hbact + pro + syn + peuk + Hard_coral + MA_turf + Soft_coral + Sponge, data = metaRDA, distance = "bray", na.action = na.exclude)
+##            Df SumOfSqs      F Pr(>F)   
+## zone        1 0.011647 5.8744  0.002 **
+## SCTLD       1 0.003045 1.5360  0.142   
+## npoc        1 0.004356 2.1972  0.038 * 
+## hbact       1 0.004324 2.1811  0.038 * 
+## pro         1 0.008331 4.2021  0.003 **
+## syn         1 0.004651 2.3458  0.036 * 
+## peuk        1 0.002325 1.1729  0.243   
+## Hard_coral  1 0.002617 1.3200  0.220   
+## MA_turf     1 0.003102 1.5648  0.129   
+## Soft_coral  1 0.002657 1.3403  0.190   
+## Sponge      1 0.001335 0.6731  0.701   
+## Residual   26 0.051550                 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+#which variables are significant?
+#At pval of <0.05, all are significant except Turf_Algae and Fleshy_Macroalgae
+#Extract information to plot with ggplot the significant variables and sites and percent explained
+barplot(dbRDA$CCA$eig)
+```
+
+<img src="figures/fig-Untargeted metabolome negative dbRDA-2.png" width="672" />
+
+```r
+RDA1 <- (dbRDA$CCA$eig[1]/sum(dbRDA$CCA$eig))*100
+RDA2 <- (dbRDA$CCA$eig[2]/sum(dbRDA$CCA$eig))*100
+
+arrowtips <- data.frame(dbRDA$CCA$biplot[,1:2], pval = anova$`Pr(>F)`[1:11], variable = rownames(dbRDA$CCA$biplot)) #extract arrow tip values and add pval result from anova test to make it easy to remove non-significant arrows
+samplepoints <- data.frame(scores(dbRDA)$sites, metadata_untarg_mtb) #extract sample point information and add in the metadata associated with it
+
+### PLOTTING sample points and arrows that show significant variables (p < 0.05)
+ggplot(samplepoints, aes(x = CAP1, y = CAP2*(-1))) +
+  geom_point(data = samplepoints, aes(fill = zonenumber), size = 5, stroke = 0.5, pch = 21, alpha = 0.8) +
+  geom_segment(data = arrowtips[arrowtips$pval < 0.05, ], aes(x = 0, xend = CAP1, y = 0, yend = CAP2*(-1)), arrow = arrow(length = unit(0.25, "cm")), colour = "darkgray") +
+  coord_fixed() +
+  geom_text(data = arrowtips[arrowtips$pval < 0.05, ], aes(x = CAP1-0.03, y = CAP2*(-1), label = variable), size = 4) + #I include text here, but for publication I comment out this line and place labels in manually
+  labs(x = paste0("dbRDA1 [", RDA1, "%]"), y = paste0("dbRDA2 [",RDA2, "%]"), title = "e. Untargeted metabolome - negative ion mode", fill = "Zone") +
+  scale_fill_manual(values = c("#DC050C", "#FF7F00", "#FDBF6F", "#4EB265", "#1F78B4", "#A6CEE3", "#882E72", "#DE77AE")) +
+    theme(plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank())
+```
+
+<img src="figures/fig-Untargeted metabolome negative dbRDA-3.png" width="672" />
 
 
 ### Figure 1f. Untargeted metabolome - positive ion mode
 
+```r
+#Remove columns with an NA because that messes with the analysis
+table(colSums(is.na(metab_untarg_pos)) == 0) #see how many columns have NA - looks like 447
+```
+
+```
+## 
+## FALSE  TRUE 
+##   447  2312
+```
+
+```r
+metabs_pos2 <- metab_untarg_pos[ , colSums(is.na(metab_untarg_pos)) == 0]
+
+#include only metadata variables you want for the dbRDA analysis
+metaRDA <- metadata_untarg_mtb %>%
+  select(Date, dayoftrip, zonenumber, zone, hbact, syn, pro, peuk, npoc, SCTLD, Hard_coral, Fleshy_Macroalgae, Soft_coral, Turf_Algae, Sponge) %>%
+  mutate(MA_turf = Fleshy_Macroalgae + Turf_Algae)
+
+set.seed(100)
+dbRDA = capscale(metabs_pos2 ~ zone + SCTLD + npoc + hbact + pro + syn + peuk + Hard_coral + MA_turf + Soft_coral + Sponge, metaRDA, distance = "bray", na.action = na.exclude) #13 explanatory environmental variables
+anova <- anova(dbRDA, by="terms", permu=999) #test for sig. environ. variables
+anova #check results
+```
+
+```
+## Permutation test for capscale under reduced model
+## Terms added sequentially (first to last)
+## Permutation: free
+## Number of permutations: 999
+## 
+## Model: capscale(formula = metabs_pos2 ~ zone + SCTLD + npoc + hbact + pro + syn + peuk + Hard_coral + MA_turf + Soft_coral + Sponge, data = metaRDA, distance = "bray", na.action = na.exclude)
+##            Df SumOfSqs      F Pr(>F)   
+## zone        1 0.006921 3.3635  0.010 **
+## SCTLD       1 0.001948 0.9466  0.392   
+## npoc        1 0.002779 1.3506  0.192   
+## hbact       1 0.003672 1.7843  0.089 . 
+## pro         1 0.008327 4.0467  0.008 **
+## syn         1 0.004187 2.0347  0.067 . 
+## peuk        1 0.001980 0.9621  0.366   
+## Hard_coral  1 0.001857 0.9023  0.415   
+## MA_turf     1 0.002571 1.2493  0.222   
+## Soft_coral  1 0.002274 1.1049  0.285   
+## Sponge      1 0.001668 0.8107  0.500   
+## Residual   26 0.053503                 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+#which variables are significant?
+#At pval of <0.05, all are significant except Turf_Algae and Fleshy_Macroalgae
+#Extract information to plot with ggplot the significant variables and sites and percent explained
+#barplot(dbRDA$CCA$eig)
+RDA1 <- (dbRDA$CCA$eig[1]/sum(dbRDA$CCA$eig))*100
+RDA2 <- (dbRDA$CCA$eig[2]/sum(dbRDA$CCA$eig))*100
+
+arrowtips <- data.frame(dbRDA$CCA$biplot[,1:2], pval = anova$`Pr(>F)`[1:11], variable = rownames(dbRDA$CCA$biplot)) #extract arrow tip values and add pval result from anova test to make it easy to remove non-significant arrows
+samplepoints <- data.frame(scores(dbRDA)$sites, metadata_untarg_mtb) #extract sample point information and add in the metadata associated with it
+
+### PLOTTING sample points and arrows that show significant variables (p < 0.05)
+ggplot(samplepoints, aes(x = CAP1, y = CAP2)) +
+  geom_point(data = samplepoints, aes(fill = zonenumber), size = 5, stroke = 0.5, pch = 21, alpha = 0.8) +
+  geom_segment(data = arrowtips[arrowtips$pval < 0.05, ], aes(x = 0, xend = CAP1, y = 0, yend = CAP2), arrow = arrow(length = unit(0.25, "cm")), colour = "darkgray") +
+  coord_fixed() +
+  geom_text(data = arrowtips[arrowtips$pval < 0.05, ], aes(x = CAP1-0.03, y = CAP2-0.03, label = variable), size = 4) + 
+  labs(x = paste0("dbRDA1 [", RDA1, "%]"), y = paste0("dbRDA2 [",RDA2, "%]"), title = "f. Untargeted metabolome - positive ion mode", fill = "Zone") +
+  scale_fill_manual(values = c("#DC050C", "#FF7F00", "#FDBF6F", "#4EB265", "#1F78B4", "#A6CEE3", "#882E72", "#DE77AE")) +
+    theme(plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank())
+```
+
+<img src="figures/fig-unnamed-chunk-3-1.png" width="672" />
 
 
 # Figure 2
