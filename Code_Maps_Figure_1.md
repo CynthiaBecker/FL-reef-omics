@@ -546,7 +546,7 @@ ggplot(samplepoints, aes(x = CAP1, y = CAP2)) +
     panel.grid.minor = element_blank())
 ```
 
-<img src="figures/fig-unnamed-chunk-3-1.png" width="672" />
+<img src="figures/fig-Untargeted metabolome positive dbRDA-1.png" width="672" />
 
 
 # Figure 2
