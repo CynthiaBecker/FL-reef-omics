@@ -123,4 +123,153 @@ ggplot(dataSig, aes(x = zonenumber, y = value)) +
   theme(axis.text.x=element_text(angle = 45, hjust = 1))
 ```
 
-<img src="figures/fig-Environmental data-1.png" width="672" />
+<img src="figures/fig-2-Environmental data-1.png" width="672" />
+
+# References - R Packages used
+
+```r
+knitr::write_bib()
+```
+
+```
+## Warning in utils::citation(..., lib.loc = lib.loc): no date field in DESCRIPTION
+## file of package 'tidyr'
+```
+
+```
+## @Manual{R-base,
+##   title = {R: A Language and Environment for Statistical Computing},
+##   author = {{R Core Team}},
+##   organization = {R Foundation for Statistical Computing},
+##   address = {Vienna, Austria},
+##   year = {2022},
+##   url = {https://www.R-project.org/},
+## }
+## 
+## @Manual{R-dplyr,
+##   title = {dplyr: A Grammar of Data Manipulation},
+##   author = {Hadley Wickham and Romain François and Lionel Henry and Kirill Müller and Davis Vaughan},
+##   year = {2023},
+##   note = {R package version 1.1.0},
+##   url = {https://CRAN.R-project.org/package=dplyr},
+## }
+## 
+## @Manual{R-ggplot2,
+##   title = {ggplot2: Create Elegant Data Visualisations Using the Grammar of Graphics},
+##   author = {Hadley Wickham and Winston Chang and Lionel Henry and Thomas Lin Pedersen and Kohske Takahashi and Claus Wilke and Kara Woo and Hiroaki Yutani and Dewey Dunnington},
+##   year = {2022},
+##   note = {R package version 3.4.0},
+##   url = {https://CRAN.R-project.org/package=ggplot2},
+## }
+## 
+## @Manual{R-tidyr,
+##   title = {tidyr: Tidy Messy Data},
+##   author = {Hadley Wickham and Davis Vaughan and Maximilian Girlich},
+##   year = {2023},
+##   note = {https://tidyr.tidyverse.org},
+## }
+## 
+## @Book{ggplot22016,
+##   author = {Hadley Wickham},
+##   title = {ggplot2: Elegant Graphics for Data Analysis},
+##   publisher = {Springer-Verlag New York},
+##   year = {2016},
+##   isbn = {978-3-319-24277-4},
+##   url = {https://ggplot2.tidyverse.org},
+## }
+```
+
+```r
+# what tweak=TRUE does
+str(knitr:::.tweak.bib)
+```
+
+```
+## List of 43
+##  $ ade4         : Named chr "  author = {Stéphane Dray and Anne-Béatrice Dufour and Jean Thioulouse and Thibaut Jombart and Sandrine Pavoine"| __truncated__
+##   ..- attr(*, "names")= chr "author"
+##  $ akima        : Named chr "  author = {H. Akima and Albrecht Gebhardt and Thomas Petzoldt and Martin Maechler},"
+##   ..- attr(*, "names")= chr "author"
+##  $ ash          : Named chr "  author = {David W. Scott and Albrecht Gebhardt and Stephen Kaluzny},"
+##   ..- attr(*, "names")= chr "author"
+##  $ bcpa         : Named chr "  author = {Jose Claudio Faria and Clarice Garcia Borges Demetrio},"
+##   ..- attr(*, "names")= chr "author"
+##  $ BiplotGUI    : Named chr "  author = {Anthony la Grange and  N. J. le Roux and P.J. Rousseeuw and I. Ruts and J. W. Tukey},"
+##   ..- attr(*, "names")= chr "author"
+##  $ bitops       : Named chr "  author = {Steve Dutky and Martin Maechler},"
+##   ..- attr(*, "names")= chr "author"
+##  $ cacheSweave  : Named chr "  author = {Roger D. Peng},"
+##   ..- attr(*, "names")= chr "author"
+##  $ cat          : Named chr "  author = {Ted Harding and Fernando Tusell and Joseph L. Schafer},"
+##   ..- attr(*, "names")= chr "author"
+##  $ CircStats    : Named chr "  author = {Ulric Lund and Claudio Agostinelli},"
+##   ..- attr(*, "names")= chr "author"
+##  $ contrast     : Named chr "  author = {Max Kuhn and Steve Weston and Jed Wing and James Forester},"
+##   ..- attr(*, "names")= chr "author"
+##  $ date         : Named chr "  author = {Terry Therneau and Thomas Lumley and Kjetil Halvorsen and Kurt Hornik},"
+##   ..- attr(*, "names")= chr "author"
+##  $ digest       : Named chr "  author = {Dirk Eddelbuettel},"
+##   ..- attr(*, "names")= chr "author"
+##  $ ElemStatLearn: Named chr "  author = {Kjetil Halvorsen},"
+##   ..- attr(*, "names")= chr "author"
+##  $ epiR         : Named chr "  author = {Mark Stevenson and Telmo Nunes and Cord Heuer and Jonathon Marshall and Javier Sanchez and Ron Thor"| __truncated__
+##   ..- attr(*, "names")= chr "author"
+##  $ Fahrmeir     : Named chr "  author = {Kjetil Halvorsen},"
+##   ..- attr(*, "names")= chr "author"
+##  $ flashClust   : Named chr "  author = {Fionn Murtagh and {R development team} and Peter Langfelder},"
+##   ..- attr(*, "names")= chr "author"
+##  $ foreach      : Named chr "  author = {{Revolution Analytics} and Steve Weston}},"
+##   ..- attr(*, "names")= chr "author"
+##  $ fortunes     : Named chr "  author = {Achim Zeileis and the R community},"
+##   ..- attr(*, "names")= chr "author"
+##  $ gee          : Named chr "  author = {Vincent J Carey and Thomas Lumley and Brian Ripley},"
+##   ..- attr(*, "names")= chr "author"
+##  $ gmodels      : Named chr "  author = {Gregory R. Warnes andBen Bolker and Thomas Lumley and Randall C Johnson and Randall C. Johnson},"
+##   ..- attr(*, "names")= chr "author"
+##  $ gWidgets     : Named chr "  author = {John Verzani},"
+##   ..- attr(*, "names")= chr "author"
+##  $ hexbin       : Named chr "  author = {Dan Carr and Nicholas Lewin-Koh and Martin Maechler},"
+##   ..- attr(*, "names")= chr "author"
+##  $ Hmisc        : Named chr "  author = {Harrell, Jr., Frank E},"
+##   ..- attr(*, "names")= chr "author"
+##  $ Hmisc        : Named chr "  author = {Frank E. {Harrell, Jr.}},"
+##   ..- attr(*, "names")= chr "author"
+##  $ leaps        : Named chr "  author = {Thomas Lumley},"
+##   ..- attr(*, "names")= chr "author"
+##  $ mapproj      : Named chr "  author = {Doug McIlroy and Ray Brownrigg and Thomas P Minka and Roger Bivand},"
+##   ..- attr(*, "names")= chr "author"
+##  $ maps         : Named chr "  author = {Ray Brownrigg},"
+##   ..- attr(*, "names")= chr "author"
+##  $ mathgraph    : Named chr "  author = {Patrick J. Burns and Nick Efthymiou and Claus Dethlefsen},"
+##   ..- attr(*, "names")= chr "author"
+##  $ oz           : Named chr "  author = {Bill Venables and Kurt Hornik},"
+##   ..- attr(*, "names")= chr "author"
+##  $ pbivnorm     : Named chr "  author = {Alan Genz and Brenton Kenkel},"
+##   ..- attr(*, "names")= chr "author"
+##  $ pscl         : Named chr "  author = {Simon Jackman and Alex Tahk and Achim Zeileis and Christina Maimone and Jim Fearon},"
+##   ..- attr(*, "names")= chr "author"
+##  $ quadprog     : Named chr "  author = {Berwin A. Turlach and Andreas Weingessel},"
+##   ..- attr(*, "names")= chr "author"
+##  $ R2SWF        : Named chr "  author = {Yixuan Qiu and Yihui Xie and Cameron Bracken},"
+##   ..- attr(*, "names")= chr "author"
+##  $ R2WinBUGS    : Named chr "  author = {Andrew Gelman and Sibylle Sturtz and Uwe Ligges and Gregor Gorjanc and Jouni Kerman},"
+##   ..- attr(*, "names")= chr "author"
+##  $ randomForest : Named chr "  author = {Leo Breiman and Adele Cutler and Andy Liaw and Matthew Wiener},"
+##   ..- attr(*, "names")= chr "author"
+##  $ rgl          : Named chr "  author = {Daniel Adler and Duncan Murdoch},"
+##   ..- attr(*, "names")= chr "author"
+##  $ RgoogleMaps  : Named chr "  author = {Markus Loecher},"
+##   ..- attr(*, "names")= chr "author"
+##  $ rms          : Named chr "  author = {Frank E. {Harrell, Jr.}},"
+##   ..- attr(*, "names")= chr "author"
+##  $ robustbase   : Named chr "  author = {Valentin Todorov and Andreas Ruckstuhl and Matias Salibian-Barrera and Tobias Verbeke and Manuel Ko"| __truncated__
+##   ..- attr(*, "names")= chr "author"
+##  $ RODBC        : Named chr "  author = {Brian Ripley and Michael Lapsley},"
+##   ..- attr(*, "names")= chr "author"
+##  $ Sleuth2      : Named chr "  author = {F. L. Ramsey and D. W. Schafer and Jeannie Sifneos and Berwin A. Turlach},"
+##   ..- attr(*, "names")= chr "author"
+##  $ sm           : Named chr "  author = {Adrian Bowman and Adelchi Azzalini},"
+##   ..- attr(*, "names")= chr "author"
+##  $ tuneR        : Named chr "  author = {Uwe Ligges},"
+##   ..- attr(*, "names")= chr "author"
+```
