@@ -9,7 +9,9 @@
 <sup>5</sup>Mote Marine Laboratory, Sarasota, FL 34236, USA    
 <sup>6</sup>The College of the Florida Keys, Key West, FL 33040, USA    
 
-## Code to prep data
-## [Code to reproduce figures](https://github.com/CynthiaBecker/FL-reef-omics/blob/main/Code_to_reproduce_figures.md)
-
-
+## Links to the code for reproducing each figure are:
+- [Figure 1 and any maps](https://github.com/CynthiaBecker/FL-reef-omics/blob/main/Code_Maps_Figure_1.md#setup)
+- [Figure 2](https://github.com/CynthiaBecker/FL-reef-omics/blob/main/Code_Figure_2.md#setup)
+- [Figure 3](https://github.com/CynthiaBecker/FL-reef-omics/blob/main/Code_Figure_3.md#setup)
+- [Figure 4](https://github.com/CynthiaBecker/FL-reef-omics/blob/main/Code_Figure_4.md#setup)
+- [Figure 5] link to be added
