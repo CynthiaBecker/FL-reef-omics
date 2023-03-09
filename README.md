@@ -14,4 +14,4 @@
 - [Figure 2](https://github.com/CynthiaBecker/FL-reef-omics/blob/main/Code_Figure_2.md#setup)
 - [Figure 3](https://github.com/CynthiaBecker/FL-reef-omics/blob/main/Code_Figure_3.md#setup)
 - [Figure 4](https://github.com/CynthiaBecker/FL-reef-omics/blob/main/Code_Figure_4.md#setup)
-- [Figure 5] link to be added
+- [Figure 5](https://github.com/CynthiaBecker/FL-reef-omics/blob/main/Code_Figure_5.md#setup)
